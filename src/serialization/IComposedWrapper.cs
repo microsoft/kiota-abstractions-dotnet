@@ -7,7 +7,7 @@ namespace Microsoft.Kiota.Abstractions.Serialization;
 /// <summary>
 /// Defines the contract a wrapper for composed types must implement to be serialized.
 /// </summary>
-public interface IComposedWrapper {
+public interface IComposedWrapper : IParsable {
     /// <summary>
     /// Gets/Sets field names to use for serialization.
     /// </summary>
