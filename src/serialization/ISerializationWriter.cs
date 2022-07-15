@@ -126,7 +126,8 @@ namespace Microsoft.Kiota.Abstractions.Serialization
         /// </summary>
         /// <param name="key">The key to be used for the written value. May be null.</param>
         /// <param name="value">The model object to be written.</param>
-        void WriteObjectValue<T>(string key, T value) where T : IParsable;
+        /// <param name="additionalValuesToMerge">The additional values to merge to the main value when serializing an intersection wrapper.</param>
+        void WriteObjectValue<T>(string key, T value, params IParsable[] additionalValuesToMerge) where T : IParsable;
         /// <summary>
         /// Writes the specified enum value to the stream with an optional given key.
         /// </summary>
