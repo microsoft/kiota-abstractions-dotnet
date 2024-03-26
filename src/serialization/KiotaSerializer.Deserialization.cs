@@ -92,7 +92,7 @@ public static partial class KiotaSerializer
     /// <param name="contentType">The content type of the stream.</param>
     /// <param name="stream">The stream to deserialize.</param>
     /// <param name="parsableFactory">The factory to create the object.</param>
-    public static IEnumerable<T> DeserializeCollection<T>(string contentType, Stream stream, ParsableFactory<T> parsableFactory) where T : IParsable
+    public static IEnumerable<T>? DeserializeCollection<T>(string contentType, Stream stream, ParsableFactory<T> parsableFactory) where T : IParsable
     {
         if(string.IsNullOrEmpty(contentType)) throw new ArgumentNullException(nameof(contentType));
         if(stream == null) throw new ArgumentNullException(nameof(stream));
@@ -106,7 +106,7 @@ public static partial class KiotaSerializer
     /// <param name="contentType">The content type of the stream.</param>
     /// <param name="serializedRepresentation">The serialized representation of the objects.</param>
     /// <param name="parsableFactory">The factory to create the object.</param>
-    public static IEnumerable<T> DeserializeCollection<T>(string contentType, string serializedRepresentation, ParsableFactory<T> parsableFactory) where T : IParsable
+    public static IEnumerable<T>? DeserializeCollection<T>(string contentType, string serializedRepresentation, ParsableFactory<T> parsableFactory) where T : IParsable
     {
         if(string.IsNullOrEmpty(serializedRepresentation)) throw new ArgumentNullException(nameof(serializedRepresentation));
         using var stream = GetStreamFromString(serializedRepresentation);
@@ -118,9 +118,9 @@ public static partial class KiotaSerializer
     /// <param name="contentType">The content type of the stream.</param>
     /// <param name="stream">The stream to deserialize.</param>
 #if NET5_0_OR_GREATER
-    public static IEnumerable<T> DeserializeCollection<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] T>(string contentType, Stream stream) where T : IParsable
+    public static IEnumerable<T>? DeserializeCollection<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] T>(string contentType, Stream stream) where T : IParsable
 #else
-    public static IEnumerable<T> DeserializeCollection<T>(string contentType, Stream stream) where T : IParsable
+    public static IEnumerable<T>? DeserializeCollection<T>(string contentType, Stream stream) where T : IParsable
 #endif
     => DeserializeCollection(contentType, stream, GetFactoryFromType<T>());
     /// <summary>
@@ -129,9 +129,9 @@ public static partial class KiotaSerializer
     /// <param name="contentType">The content type of the stream.</param>
     /// <param name="serializedRepresentation">The serialized representation of the object.</param>
 #if NET5_0_OR_GREATER
-    public static IEnumerable<T> DeserializeCollection<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] T>(string contentType, string serializedRepresentation) where T : IParsable
+    public static IEnumerable<T>? DeserializeCollection<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] T>(string contentType, string serializedRepresentation) where T : IParsable
 #else
-    public static IEnumerable<T> DeserializeCollection<T>(string contentType, string serializedRepresentation) where T : IParsable
+    public static IEnumerable<T>? DeserializeCollection<T>(string contentType, string serializedRepresentation) where T : IParsable
 #endif
     => DeserializeCollection(contentType, serializedRepresentation, GetFactoryFromType<T>());
 }

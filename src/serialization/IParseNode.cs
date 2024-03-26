@@ -95,22 +95,22 @@ namespace Microsoft.Kiota.Abstractions.Serialization
         /// Gets the collection of primitive values of the node.
         /// </summary>
         /// <returns>The collection of primitive values.</returns>
-        IEnumerable<T> GetCollectionOfPrimitiveValues<T>();
+        IEnumerable<T>? GetCollectionOfPrimitiveValues<T>();
         /// <summary>
         /// Gets the collection of enum values of the node.
         /// </summary>
         /// <returns>The collection of enum values.</returns>
 #if NET5_0_OR_GREATER
-        IEnumerable<T?> GetCollectionOfEnumValues<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] T>() where T : struct, Enum;
+        IEnumerable<T?>? GetCollectionOfEnumValues<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] T>() where T : struct, Enum;
 #else
-        IEnumerable<T?> GetCollectionOfEnumValues<T>() where T : struct, Enum;
+        IEnumerable<T?>? GetCollectionOfEnumValues<T>() where T : struct, Enum;
 #endif
         /// <summary>
         /// Gets the collection of model objects values of the node.
         /// </summary>
         /// <param name="factory">The factory to use to create the model object.</param>
         /// <returns>The collection of model objects values.</returns>
-        IEnumerable<T> GetCollectionOfObjectValues<T>(ParsableFactory<T> factory) where T : IParsable;
+        IEnumerable<T>? GetCollectionOfObjectValues<T>(ParsableFactory<T> factory) where T : IParsable;
         /// <summary>
         /// Gets the enum value of the node.
         /// </summary>
