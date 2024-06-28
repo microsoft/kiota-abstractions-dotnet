@@ -553,7 +553,7 @@ namespace Microsoft.Kiota.Abstractions.Tests
             // Act
             testRequest.AddQueryParameters(new GetQueryParameters { DataSet = TestEnum.First });
             // Assert
-            Assert.Equal("http://localhost/me?dataset=1", testRequest.URI.ToString());
+            Assert.Equal("http://localhost/me?dataset=Value_1", testRequest.URI.ToString());
         }
         [Fact]
         public void SetsEnumValuesInQueryParameters()
@@ -567,7 +567,7 @@ namespace Microsoft.Kiota.Abstractions.Tests
             // Act
             testRequest.AddQueryParameters(new GetQueryParameters { DataSets = new TestEnum[] { TestEnum.First, TestEnum.Second } });
             // Assert
-            Assert.Equal("http://localhost/me?datasets=1,2", testRequest.URI.ToString());
+            Assert.Equal("http://localhost/me?datasets=Value_1,Value_2", testRequest.URI.ToString());
         }
         [Fact]
         public void SetsEnumValueInPathParameters()
@@ -581,7 +581,7 @@ namespace Microsoft.Kiota.Abstractions.Tests
             // Act
             testRequest.PathParameters.Add("dataset", TestEnum.First);
             // Assert
-            Assert.Equal("http://localhost/1", testRequest.URI.ToString());
+            Assert.Equal("http://localhost/Value_1", testRequest.URI.ToString());
         }
         [Fact]
         public void SetsEnumValuesInPathParameters()
@@ -595,7 +595,7 @@ namespace Microsoft.Kiota.Abstractions.Tests
             // Act
             testRequest.PathParameters.Add("dataset", new TestEnum[] { TestEnum.First, TestEnum.Second });
             // Assert
-            Assert.Equal("http://localhost/1,2", testRequest.URI.ToString());
+            Assert.Equal("http://localhost/Value_1,Value_2", testRequest.URI.ToString());
         }
 
 

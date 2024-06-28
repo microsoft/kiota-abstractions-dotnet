@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.7] - 2024-06-28
+
+- Add helper methods to parse enums from strings.
+
 ## [1.9.6] - 2024-06-12
 
 - Add `IEnumerable<T>` extension methods to remove LINQ dependency from generated code.
