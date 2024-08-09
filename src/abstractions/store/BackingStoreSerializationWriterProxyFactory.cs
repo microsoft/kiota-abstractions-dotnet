@@ -37,5 +37,19 @@ namespace Microsoft.Kiota.Abstractions.Store
                 }
             })
         { }
+
+        /// <summary>
+        /// Get the serialization writer for the given content type.
+        /// </summary>
+        /// <param name="contentType">The content type for which a serialization writer should be created.</param>
+        /// <param name="serializeOnlyChangedValues">By default, a backing store is used, and you'll only get changed properties</param>
+        /// <returns></returns>
+        public ISerializationWriter GetSerializationWriter(string contentType, bool serializeOnlyChangedValues)
+        {
+            if(serializeOnlyChangedValues)
+                return base.GetSerializationWriter(contentType);
+
+            return ProxiedSerializationWriterFactory.GetSerializationWriter(contentType);
+        }
     }
 }
