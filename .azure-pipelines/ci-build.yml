@@ -86,10 +86,15 @@ extends:
               projects: '$(Build.SourcesDirectory)\Microsoft.Kiota.sln'
               arguments: '--configuration $(BuildConfiguration) --no-build --framework net8.0'
 
-          - task: EsrpCodeSigning@3
+          - task: EsrpCodeSigning@5
             displayName: 'ESRP DLL Strong Name'
             inputs:
-              ConnectedServiceName: 'microsoftgraph ESRP CodeSign DLL and NuGet (AKV)'
+              ConnectedServiceName: 'Federated DevX ESRP Managed Identity Connection'
+              AppRegistrationClientId: '65035b7f-7357-4f29-bf25-c5ee5c3949f8'
+              AppRegistrationTenantId: 'cdc5aeea-15c5-4db6-b079-fcadd2505dc2'
+              AuthAKVName: 'akv-prod-eastus'
+              AuthCertName: 'ReferenceLibraryPrivateCert'
+              AuthSignCertName: 'ReferencePackagePublisherCertificate'
               FolderPath: src  # This path should already omit test dlls as they exist in the `tests` folder
               Pattern: '**\*Microsoft.Kiota.*.dll'
               signConfigType: inlineSignParams
@@ -112,11 +117,19 @@ extends:
                     }
                 ]
               SessionTimeout: 20
+              MaxConcurrency: 50
+              MaxRetryAttempts: 5
+              PendingAnalysisWaitTimeoutMinutes: 5
           
-          - task: EsrpCodeSigning@3
+          - task: EsrpCodeSigning@5
             displayName: 'ESRP DLL CodeSigning'
             inputs:
-              ConnectedServiceName: 'microsoftgraph ESRP CodeSign DLL and NuGet (AKV)'
+              ConnectedServiceName: 'Federated DevX ESRP Managed Identity Connection'
+              AppRegistrationClientId: '65035b7f-7357-4f29-bf25-c5ee5c3949f8'
+              AppRegistrationTenantId: 'cdc5aeea-15c5-4db6-b079-fcadd2505dc2'
+              AuthAKVName: 'akv-prod-eastus'
+              AuthCertName: 'ReferenceLibraryPrivateCert'
+              AuthSignCertName: 'ReferencePackagePublisherCertificate'
               FolderPath: src  # This path should already omit test dlls as they exist in the `tests` folder
               signConfigType: inlineSignParams
               UseMinimatch: true
@@ -160,6 +173,9 @@ extends:
                     }
                 ]
               SessionTimeout: 20
+              MaxConcurrency: 50
+              MaxRetryAttempts: 5
+              PendingAnalysisWaitTimeoutMinutes: 5
 
           # arguments are not parsed in DotNetCoreCLI@2 task for `pack` command, that's why we have a custom pack command here
           - pwsh: dotnet pack /p:IncludeSymbols=true /p:SymbolPackageFormat=snupkg --no-build --output $env:BUILD_ARTIFACTSTAGINGDIRECTORY --configuration $env:BUILD_CONFIGURATION
@@ -167,10 +183,15 @@ extends:
               BUILD_CONFIGURATION: $(BuildConfiguration)
             displayName: Dotnet pack
 
-          - task: EsrpCodeSigning@3
+          - task: EsrpCodeSigning@5
             displayName: 'ESRP CodeSigning Nuget Packages'
             inputs:
-              ConnectedServiceName: 'microsoftgraph ESRP CodeSign DLL and NuGet (AKV)'
+              ConnectedServiceName: 'Federated DevX ESRP Managed Identity Connection'
+              AppRegistrationClientId: '65035b7f-7357-4f29-bf25-c5ee5c3949f8'
+              AppRegistrationTenantId: 'cdc5aeea-15c5-4db6-b079-fcadd2505dc2'
+              AuthAKVName: 'akv-prod-eastus'
+              AuthCertName: 'ReferenceLibraryPrivateCert'
+              AuthSignCertName: 'ReferencePackagePublisherCertificate'
               FolderPath: '$(Build.ArtifactStagingDirectory)'
               Pattern: '*.nupkg'
               signConfigType: inlineSignParams
@@ -193,6 +214,9 @@ extends:
                     }
                 ]
               SessionTimeout: 20
+              MaxConcurrency: 50
+              MaxRetryAttempts: 5
+              PendingAnalysisWaitTimeoutMinutes: 5
               
           - task: CopyFiles@2
             displayName: 'Copy release scripts to artifact staging directory'
