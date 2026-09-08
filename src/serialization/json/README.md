@@ -12,6 +12,50 @@ Read more about Kiota [here](https://github.com/microsoft/kiota/blob/main/README
 dotnet add package Microsoft.Kiota.Serialization.Json
 ```
 
+## Using Date and Time Converters with System.Text.Json
+
+The library provides `DateJsonConverter` and `TimeJsonConverter` to enable serialization and deserialization of Kiota's `Date` and `Time` types when using `System.Text.Json.JsonSerializer` directly (outside of Kiota's serialization infrastructure).
+
+### Option 1: Using DefaultOptionsWithConverters
+
+The simplest approach is to use the pre-configured options with converters:
+
+```csharp
+using Microsoft.Kiota.Abstractions;
+using Microsoft.Kiota.Serialization.Json;
+using System.Text.Json;
+
+var date = new Date(2025, 10, 24);
+var json = JsonSerializer.Serialize(date, KiotaJsonSerializationContext.DefaultOptionsWithConverters);
+// Output: "2025-10-24"
+
+var deserialized = JsonSerializer.Deserialize<Date>(json, KiotaJsonSerializationContext.DefaultOptionsWithConverters);
+// deserialized.Year == 2025, deserialized.Month == 10, deserialized.Day == 24
+```
+
+### Option 2: Manually Registering Converters
+
+You can also manually register the converters with your own `JsonSerializerOptions`:
+
+```csharp
+using Microsoft.Kiota.Abstractions;
+using Microsoft.Kiota.Serialization.Json;
+using System.Text.Json;
+
+var options = new JsonSerializerOptions();
+options.Converters.Add(new DateJsonConverter());
+options.Converters.Add(new TimeJsonConverter());
+
+var time = new Time(10, 18, 54);
+var json = JsonSerializer.Serialize(time, options);
+// Output: "10:18:54"
+
+var deserialized = JsonSerializer.Deserialize<Time>(json, options);
+// deserialized.Hour == 10, deserialized.Minute == 18, deserialized.Second == 54
+```
+
+This is particularly useful when integrating with third-party libraries that serialize/deserialize Kiota-generated models but cannot use Kiota's serialization infrastructure.
+
 ## Debugging
 
 If you are using Visual Studio Code as your IDE, the **launch.json** file already contains the configuration to build and test the library. Otherwise, you can open the **Microsoft.Kiota.Serialization.Json.sln** with Visual Studio.

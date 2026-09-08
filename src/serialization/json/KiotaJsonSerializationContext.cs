@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Kiota.Abstractions;
 
@@ -34,4 +35,24 @@ namespace Microsoft.Kiota.Serialization.Json;
 [JsonSerializable(typeof(Date?))]
 [JsonSerializable(typeof(Time))]
 [JsonSerializable(typeof(Time?))]
-public partial class KiotaJsonSerializationContext : JsonSerializerContext;
+public partial class KiotaJsonSerializationContext : JsonSerializerContext
+{
+    private static JsonSerializerOptions? _defaultOptionsWithConverters;
+
+    /// <summary>
+    /// Gets the default <see cref="JsonSerializerOptions"/> with Date and Time converters registered.
+    /// </summary>
+    public static JsonSerializerOptions DefaultOptionsWithConverters
+    {
+        get
+        {
+            if(_defaultOptionsWithConverters == null)
+            {
+                _defaultOptionsWithConverters = new JsonSerializerOptions(Default.Options);
+                _defaultOptionsWithConverters.Converters.Add(new DateJsonConverter());
+                _defaultOptionsWithConverters.Converters.Add(new TimeJsonConverter());
+            }
+            return _defaultOptionsWithConverters;
+        }
+    }
+}
