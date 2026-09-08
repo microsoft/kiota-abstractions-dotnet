@@ -220,6 +220,38 @@ namespace Microsoft.Kiota.Abstractions.Store
             }
         }
 
+        /// <summary>
+        /// Sets all fields recursively to "modified" so they will be sent in the next serialization.
+        /// This is useful to allow the model object to be reused to send to a POST or PUT call.
+        /// Do not use if you are using a sparse PATCH.
+        /// </summary>
+        public void MakeSendable()
+        {
+            ReturnOnlyChangedValues = false;
+
+            foreach(var entry in store)
+            {
+                store[entry.Key] = Tuple.Create(true, entry.Value.Item2);
+
+                if(entry.Value.Item2 is Tuple<ICollection, int> collectionTuple)
+                {
+                    foreach(var collectionItem in collectionTuple.Item1)
+                    {
+                        if(collectionItem is not IBackedModel backedModel)
+                        {
+                            break;
+                        }
+
+                        backedModel.BackingStore.MakeSendable();
+                    }
+                }
+                else if(entry.Value.Item2 is IBackedModel backedModel)
+                {
+                    backedModel.BackingStore.MakeSendable();
+                }
+            }
+        }
+
         private void EnsureCollectionPropertyIsConsistent(string key, object? storeItem)
         {
             if(storeItem is Tuple<ICollection, int> collectionTuple) // check if we put in a collection annotated with the size

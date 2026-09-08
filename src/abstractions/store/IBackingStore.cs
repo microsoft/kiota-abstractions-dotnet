@@ -56,5 +56,11 @@ namespace Microsoft.Kiota.Abstractions.Store
         bool InitializationCompleted { get; set; }
         /// <value>Whether to return only values that have changed since the initialization of the object when calling the Get and Enumerate methods.</value>
         bool ReturnOnlyChangedValues { get; set; }
+        /// <summary>
+        /// Sets all fields recursively to "modified" so they will be sent in the next serialization.
+        /// This is useful to allow the model object to be reused to send to a POST or PUT call.
+        /// Do not use if you are using a sparse PATCH.
+        /// </summary>
+        void MakeSendable();
     }
 }

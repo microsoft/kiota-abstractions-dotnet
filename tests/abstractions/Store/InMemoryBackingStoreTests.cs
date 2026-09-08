@@ -1,9 +1,7 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
+using Microsoft.Kiota.Abstractions.Extensions;
 using Microsoft.Kiota.Abstractions.Serialization;
 using Microsoft.Kiota.Abstractions.Store;
 using Microsoft.Kiota.Abstractions.Tests.Mocks;
@@ -80,7 +78,7 @@ namespace Microsoft.Kiota.Abstractions.Tests.Store
             Assert.Equal("businessPhones", changedValues.First().Key);
         }
         [Fact]
-        public void TestsBackingStoreEmbeddedInModelWithAdditionDataValues()
+        public void TestsBackingStoreEmbeddedInModelWithAdditionalDataValues()
         {
             // Arrange dummy user with initialized backingstore
             var testUser = new TestEntity
@@ -441,6 +439,53 @@ namespace Microsoft.Kiota.Abstractions.Tests.Store
             Assert.Empty(testUserSubscriptions);// subscription only is added in nested store
             var colleagueSubscriptions = GetSubscriptionsPropertyFromBackingStore(testUser.Colleagues[0].BackingStore);
             Assert.Single(colleagueSubscriptions);// only one subscription to be invoked for the collection "colleagues"
+        }
+
+        [Fact]
+        public void TestsMakeRunnableOnMultipleNestingAndCollectionPatterns()
+        {
+            var testUser = new TestEntity
+            {
+                Id = "84c747c1-d2c0-410d-ba50-fc23e0b4abbe",
+                Manager = new TestEntity
+                {
+                    Id = "1a1e218d-1a85-450a-b96e-ab0786b9022b"
+                },
+                Colleagues =
+                [
+                    new TestEntity
+                    {
+                        Id = "2fe22fe5-1132-42cf-90f9-1dc17e325a74",
+                        BusinessPhones = [ "+1 234 567 891" ]
+                    }
+                ]
+            };
+            testUser.BackingStore.InitializationCompleted = testUser.Colleagues[0].BackingStore.InitializationCompleted = testUser.Manager.BackingStore.InitializationCompleted = true;
+
+            // Simulate a serialization. Verify that the model serializes to an empty result since all existing data values are marked as "not changed".
+            testUser.Manager.BackingStore.ReturnOnlyChangedValues = true;
+            testUser.Colleagues[0].BackingStore.ReturnOnlyChangedValues = true; //serializer will do this. 
+            testUser.BackingStore.ReturnOnlyChangedValues = true;
+            var changedValues = testUser.BackingStore.Enumerate().ToDictionary(x => x.Key, y => y.Value!);
+            Assert.Empty(changedValues);
+
+            // Make the top-level entity sendable and verify that the resulting setting of "changed" on
+            // every recursive IBackedModel and collection results in returning all objects in the result.
+            testUser.MakeSendable();
+            changedValues = testUser.BackingStore.Enumerate().ToDictionary(x => x.Key, y => y.Value!);
+            Assert.NotEmpty(changedValues);
+            Assert.True(changedValues.TryGetValue("id", out var idObj));
+            Assert.Equal("84c747c1-d2c0-410d-ba50-fc23e0b4abbe", idObj);
+            Assert.True(changedValues.TryGetValue("manager", out var managerObj));
+            var manager = (TestEntity)managerObj;
+            Assert.Equal("1a1e218d-1a85-450a-b96e-ab0786b9022b", manager.Id);
+            Assert.True(changedValues.ContainsKey("colleagues"));
+            var colleagues = ((Tuple<ICollection, int>)changedValues["colleagues"]).Item1.Cast<TestEntity>().ToList();
+            Assert.Single(colleagues);
+            Assert.Equal("2fe22fe5-1132-42cf-90f9-1dc17e325a74", colleagues[0].Id);
+            Assert.NotNull(colleagues[0].BusinessPhones);
+            Assert.Single(colleagues[0].BusinessPhones!);
+            Assert.Equal("+1 234 567 891", colleagues[0].BusinessPhones![0]);
         }
 
         [Fact]
